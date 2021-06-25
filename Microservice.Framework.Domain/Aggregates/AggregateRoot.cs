@@ -23,6 +23,7 @@ namespace Microservice.Framework.Domain.Aggregates
         private bool _exists;
         private readonly List<IOccuredEvent> _occuredEvents = new List<IOccuredEvent>();
         private static readonly IAggregateName AggregateName = typeof(TAggregate).GetAggregateName();
+        private CircularBuffer<ISourceId> _previousSourceIds = new CircularBuffer<ISourceId>(10);
 
         protected AggregateRoot(TIdentity id)
         {
@@ -102,7 +103,7 @@ namespace Microservice.Framework.Domain.Aggregates
 
         public bool HasSourceId(ISourceId sourceId)
         {
-            return !sourceId.IsNone();
+            return !sourceId.IsNone() && _previousSourceIds.Any(s => s.Value == sourceId.Value);
         }
 
         protected virtual void Emit<TEvent>(TEvent aggregateEvent, IMetadata metadata = null)
