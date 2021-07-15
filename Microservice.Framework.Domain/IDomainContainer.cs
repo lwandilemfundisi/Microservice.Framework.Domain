@@ -12,5 +12,7 @@ namespace Microservice.Framework.Domain
         IDomainContainer AddJobs(IEnumerable<Type> jobTypes);
 
         IDomainContainer AddEvents(IEnumerable<Type> aggregateEventTypes);
+
+        IDomainContainer AddRules(IEnumerable<Type> ruleTypes);
     }
 }

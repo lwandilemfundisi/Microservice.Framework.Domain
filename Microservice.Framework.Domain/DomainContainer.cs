@@ -1,17 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
-using Microservice.Framework.Common;
+﻿using Microservice.Framework.Common;
 using Microservice.Framework.Domain.Aggregates;
 using Microservice.Framework.Domain.Commands;
 using Microservice.Framework.Domain.Events;
 using Microservice.Framework.Domain.Events.AggregateEvents;
 using Microservice.Framework.Domain.Events.Serializers;
 using Microservice.Framework.Domain.Jobs;
-using Microservice.Framework.Domain.Provided;
 using Microservice.Framework.Domain.Queries;
+using Microservice.Framework.Domain.Rules;
 using Microservice.Framework.Domain.Subscribers;
 using Microservice.Framework.Ioc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -68,6 +68,19 @@ namespace Microservice.Framework.Domain
             return this;
         }
 
+        public IDomainContainer AddRules(IEnumerable<Type> ruleTypes)
+        {
+            foreach (var ruleType in ruleTypes)
+            {
+                if (!typeof(IRule).GetTypeInfo().IsAssignableFrom(ruleType))
+                {
+                    throw new ArgumentException($"Type {ruleType.PrettyPrint()} is not a {typeof(IRule<>).PrettyPrint()}");
+                }
+                _types.Add(ruleType);
+            }
+            return this;
+        }
+
         protected override void RegisterDefaults(IServiceCollection serviceCollection)
         {
             base.RegisterDefaults(serviceCollection);
@@ -81,6 +94,7 @@ namespace Microservice.Framework.Domain
             serviceCollection.TryAddSingleton<ICommandDefinitionService, CommandDefinitionService>();
             serviceCollection.TryAddSingleton<IEventDefinitionService, EventDefinitionService>();
             serviceCollection.TryAddSingleton<IJobDefinitionService, JobDefinitionService>();
+            serviceCollection.TryAddSingleton<IRuleDefinitionService, RuleDefinitionService>();
 
             serviceCollection.TryAddTransient<IEventJsonSerializer, EventJsonSerializer>();
             serviceCollection.TryAddTransient<IJobScheduler, InstantJobScheduler>();
