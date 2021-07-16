@@ -7,6 +7,7 @@ using Microservice.Framework.Domain.Events.Serializers;
 using Microservice.Framework.Domain.Jobs;
 using Microservice.Framework.Domain.Queries;
 using Microservice.Framework.Domain.Rules;
+using Microservice.Framework.Domain.Rules.RuleValidator;
 using Microservice.Framework.Domain.Subscribers;
 using Microservice.Framework.Ioc;
 using Microsoft.Extensions.DependencyInjection;
@@ -104,6 +105,7 @@ namespace Microservice.Framework.Domain
             serviceCollection.TryAddTransient<ISerializedCommandPublisher, SerializedCommandPublisher>();
             serviceCollection.TryAddTransient<IDispatchToEventSubscribers, DispatchToEventSubscribers>();
             serviceCollection.TryAddSingleton<IDomainEventFactory, DomainEventFactory>();
+            serviceCollection.TryAddTransient<IValidator, Validator>();
 
         }
     }

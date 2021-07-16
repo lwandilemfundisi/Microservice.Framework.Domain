@@ -19,7 +19,8 @@ namespace Microservice.Framework.Domain.Extensions
                 .AddCommandHandlers(fromAssembly, predicate)
                 .AddMetadataProviders(fromAssembly, predicate)
                 .AddSubscribers(fromAssembly, predicate)
-                .AddQueryHandlers(fromAssembly, predicate);
+                .AddQueryHandlers(fromAssembly, predicate)
+                .AddRules(fromAssembly, predicate);
         }
     }
 }
