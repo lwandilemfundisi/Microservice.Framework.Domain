@@ -75,7 +75,7 @@ namespace Microservice.Framework.Domain
             {
                 if (!typeof(IRule).GetTypeInfo().IsAssignableFrom(ruleType))
                 {
-                    throw new ArgumentException($"Type {ruleType.PrettyPrint()} is not a {typeof(IRule<>).PrettyPrint()}");
+                    throw new ArgumentException($"Type {ruleType.PrettyPrint()} is not a {typeof(IRule).PrettyPrint()}");
                 }
                 _types.Add(ruleType);
             }

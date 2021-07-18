@@ -1,63 +1,57 @@
 ﻿using Microservice.Framework.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microservice.Framework.Domain.Rules.Notifications;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
-    public abstract class CollectionRangeRule<T> : Rule<T>, IRangeRule<T> where T : class
+    public abstract class CollectionRangeRule<T> : Rule<T>, IRangeRule where T : class
     {
-        #region Virtual Methods
+        #region IRangeRule Members
+
+        public object GetMinimum()
+        {
+            return OnGetMinimum();
+        }
+
+        public object GetMaximum()
+        {
+            return OnGetMaximum();
+        }
+
+        #endregion
+
+        #region Properties
 
         protected abstract int CollectionLength { get; }
 
-        protected override string ValidationMessage
-        {
-            get
-            {
-                if (OnGetMinimum().GetValueOrDefault() == 0)
-                {
-                    return "The {0} list may not be more than " + $"{OnGetMaximum()}";
-                }
-                else if (OnGetMaximum().HasValue)
-                {
-                    return "The {0} list must be between " + $"{OnGetMinimum()} and {OnGetMaximum()}";
-                }
-                else
-                {
-                    if (OnGetMinimum().GetValueOrDefault() == 1)
-                    {
-                        return "Please specify at least one {0} item";
-                    }
-                    return "The {0} list may not be less than " + $"{OnGetMinimum()}";
-                }
-            }
-        }
+        #endregion
 
-        protected override bool ValidationCondition()
+        #region Virtual Methods
+
+        protected override Notification OnValidate()
         {
+            var notification = base.OnValidate();
             var minimum = GetMinimum() as int?;
             var maximum = GetMaximum() as int?;
             var collectionLength = CollectionLength;
 
-            if (minimum.HasValue
-             && minimum.Value > 0
+            if (minimum.HasValue 
+             && minimum.Value > 0 
              && PropertyValue.IsNull())
             {
-                return false;
+                notification += OnCreateMessage(minimum, maximum);
             }
             else if (minimum.HasValue
                   && collectionLength < minimum.Value)
             {
-                return false;
+                notification += OnCreateMessage(minimum, maximum);
             }
             else if (maximum.HasValue
                   && collectionLength > maximum.Value)
             {
-                return false;
+                notification += OnCreateMessage(minimum, maximum);
             }
 
-            return true;
+            return notification;
         }
 
         protected virtual int? OnGetMinimum()
@@ -70,18 +64,24 @@ namespace Microservice.Framework.Domain.Rules.Common
             return null;
         }
 
-        #endregion
-
-        #region IRangeRule Members
-
-        public object GetMaximum()
+        protected virtual Message OnCreateMessage(int? minimum, int? maximum)
         {
-            return OnGetMaximum();
-        }
-
-        public object GetMinimum()
-        {
-            return OnGetMinimum();
+            if (minimum.GetValueOrDefault() == 0)
+            {
+                return CreateMessage("The {0} list may not be more than {1}", DisplayName, maximum);
+            }
+            else if (maximum.HasValue)
+            {
+                return CreateMessage("The {0} list must be between {1} and {2}", DisplayName, minimum, maximum);
+            }
+            else
+            {
+                if (minimum.GetValueOrDefault() == 1)
+                {
+                    return CreateMessage("Please specify at least one {0} item", DisplayName);
+                }
+                return CreateMessage("The {0} list may not be less than {1}", DisplayName, minimum);
+            }
         }
 
         #endregion

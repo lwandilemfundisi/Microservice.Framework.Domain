@@ -1,44 +1,11 @@
 ﻿using Microservice.Framework.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microservice.Framework.Domain.Rules.Notifications;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
-    public abstract class BytesRangeRule<T> : Rule<T>, IRangeRule<T>
+    public abstract class BytesRangeRule<T> : Rule<T>, IRangeRule where T : class
     {
-        #region Virtual Methods
-
-        protected override string ValidationMessage => "{0} does not fall between the range of " + $"{OnGetMinimum()} and {OnGetMaximum()} bytes";
-
-        protected override bool ValidationCondition()
-        {
-            var propertyValue = PropertyValue as byte[];
-
-            if (propertyValue.IsNotNull())
-            {
-                var minimum = OnGetMinimum();
-                var maximum = OnGetMaximum();
-
-                if (propertyValue.Length < minimum || propertyValue.Length > maximum)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        protected abstract int OnGetMaximum();
-
-        protected virtual int OnGetMinimum()
-        {
-            return 1;
-        }
-
-        #endregion
-
-        #region IRangeRule Members
+        #region IRange Members
 
         public object GetMaximum()
         {
@@ -48,6 +15,61 @@ namespace Microservice.Framework.Domain.Rules.Common
         public object GetMinimum()
         {
             return OnGetMinimum();
+        }
+
+        #endregion
+
+        #region Virtual Methods
+
+        protected abstract int OnGetMaximum();
+
+        protected virtual int OnGetMinimum()
+        {
+            return 1;
+        }
+
+        protected override Notification OnValidate()
+        {
+            var notification = Notification.CreateEmpty();
+
+            var propertyValue = PropertyValue as byte[];
+
+            if (propertyValue.IsNotNull())
+            {
+                var minimum = OnGetMinimum();
+                var maximum = OnGetMaximum();
+
+                if (propertyValue.Length < minimum || propertyValue.Length > maximum)
+                {
+                    notification.AddMessage(OnCreateMessage());
+                }
+            }
+
+            return notification;
+        }
+
+        protected virtual Message OnCreateMessage()
+        {
+            return OnCreateMessage(DisplayName, OnGetMinimum(), OnGetMaximum());
+        }
+
+        protected virtual Message OnCreateMessage(string displayName, int minimum, int maximum)
+        {
+            return CreateMessage("{0} does not fall between the range of {1} and {2} bytes", DisplayName, minimum, maximum);
+        }
+
+        #endregion
+    }
+
+    public abstract class BytesRangeRule<T, C> : BytesRangeRule<T>
+        where T : class
+        where C : class
+    {
+        #region Methods
+
+        public C GetContext()
+        {
+            return (C)Context;
         }
 
         #endregion

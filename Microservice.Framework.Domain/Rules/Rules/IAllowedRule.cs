@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections;
+﻿using System.Collections;
 
 namespace Microservice.Framework.Domain.Rules
 {
-    public interface IAllowedRule<T> : IRule<T>
+    public interface IAllowedRule : IRule
     {
         IEnumerable GetAllowedValues();
     }

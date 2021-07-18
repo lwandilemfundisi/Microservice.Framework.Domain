@@ -1,33 +1,25 @@
 ﻿using Microservice.Framework.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microservice.Framework.Domain.Rules.Notifications;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
-    public abstract class StringRangeRule<T> : Rule<T>, IRangeRule<T> where T : class
+    public abstract class StringRangeRule<T> : Rule<T>, IRangeRule where T : class
     {
-        #region Virtual Methods
+        #region IRange Members
 
-        protected override string ValidationMessage => "{0} does not fall between the range of " + $"{OnGetMinimum()} and {OnGetMaximum()}";
-
-        protected override bool ValidationCondition()
+        public object GetMaximum()
         {
-            var propertyValue = PropertyValue.AsString();
-
-            if (propertyValue.IsNotNullOrEmpty())
-            {
-                var minimum = OnGetMinimum();
-                var maximum = OnGetMaximum();
-
-                if (propertyValue.Length < minimum || propertyValue.Length > maximum)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return OnGetMaximum();
         }
+
+        public object GetMinimum()
+        {
+            return OnGetMinimum();
+        }
+
+        #endregion
+
+        #region Virtual Methods
 
         protected virtual int OnGetMaximum()
         {
@@ -39,18 +31,44 @@ namespace Microservice.Framework.Domain.Rules.Common
             return 1;
         }
 
-        #endregion
-
-        #region IRangeRule Members
-
-        public object GetMaximum()
+        protected override Notification OnValidate()
         {
-            return OnGetMaximum();
+            var notification = Notification.CreateEmpty();
+
+            var propertyValue = PropertyValue.AsString();
+
+            //rule should not check empty values. Required Rules must validate empty or null values
+            if (propertyValue.IsNotNullOrEmpty())
+            {
+                var minimum = OnGetMinimum();
+                var maximum = OnGetMaximum();
+
+                if (propertyValue.Length < minimum || propertyValue.Length > maximum)
+                {
+                    notification.AddMessage(OnCreateMessage());
+                }
+            }
+
+            return notification;
         }
 
-        public object GetMinimum()
+        protected virtual Message OnCreateMessage()
         {
-            return OnGetMinimum();
+            return CreateMessage("{0} does not fall between the range of {1} and {2}", DisplayName, OnGetMinimum(), OnGetMaximum());
+        }
+
+        #endregion
+    }
+
+    public abstract class StringRangeRule<T, C> : StringRangeRule<T> 
+        where T : class
+        where C : class
+    {
+        #region Methods
+
+        public C GetContext()
+        {
+            return (C)Context;
         }
 
         #endregion

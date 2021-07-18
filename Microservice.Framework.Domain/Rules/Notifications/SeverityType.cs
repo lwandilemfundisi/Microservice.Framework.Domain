@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace Microservice.Framework.Domain.Rules.Notifications
 {
-    public enum NotificationMessageType
+    public enum SeverityType
     {
-        Error,
-        Warning,
-        Information
+        Information,
+        Critical,
+        Warning
     }
 }

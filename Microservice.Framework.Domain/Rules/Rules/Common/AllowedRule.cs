@@ -1,29 +1,42 @@
-﻿using System;
+﻿using Microservice.Framework.Domain.Rules.Notifications;
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microservice.Framework.Common;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
-    public abstract class AllowedRule<T> : Rule<T>, IAllowedRule<T> where T : class
+    public abstract class AllowedRule<T> : Rule<T>, IAllowedRule where T : class
     {
+        #region IAllowedRule Members
+
+        public IEnumerable GetAllowedValues()
+        {
+            return OnGetAllowedValues();
+        }
+
+        #endregion
+
         #region Virtual Methods
 
-        protected override string ValidationMessage => "'{0}' is not allowed";
-
-        protected override bool ValidationCondition()
+        protected override Notification OnValidate()
         {
+            var notification = Notification.CreateEmpty();
+
             if (PropertyHasValue())
             {
-                if (OnContainsPropertyValue(GetAllowedValues(), PropertyValue))
+                if (!OnContainsPropertyValue(GetAllowedValues(), PropertyValue))
                 {
-                    return true;
+                    notification.AddMessage(OnCreateMessage());
                 }
             }
+            
+            return notification;
+        }
 
-            return false;
+        protected virtual Message OnCreateMessage()
+        {
+            return CreateMessage("{0} is not allowed", DisplayName);
         }
 
         protected abstract IEnumerable OnGetAllowedValues();
@@ -34,12 +47,17 @@ namespace Microservice.Framework.Domain.Rules.Common
         }
 
         #endregion
+    }
 
-        #region IAllowedRule
+    public abstract class AllowedRule<T, C> : AllowedRule<T> 
+        where T : class
+        where C : class
+    {
+        #region Methods
 
-        public IEnumerable GetAllowedValues()
+        public C GetContext()
         {
-            return OnGetAllowedValues();
+            return (C)Context;
         }
 
         #endregion

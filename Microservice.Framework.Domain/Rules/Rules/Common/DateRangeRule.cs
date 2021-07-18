@@ -1,18 +1,30 @@
 ﻿using Microservice.Framework.Common;
+using Microservice.Framework.Domain.Rules.Notifications;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
-    public abstract class DateRangeRule<T> : Rule<T>, IRangeRule<T> where T : class
+    public abstract class DateRangeRule<T> : Rule<T>, IRangeRule where T : class
     {
-        #region Virtual Methods
+        #region IRange Members
 
-        protected override string ValidationMessage => "{0} does not fall within the range of " + $"{OnGetMinimum().ToLongDateString()} and {OnGetMaximum().ToLongDateString()}";
-
-        protected override bool ValidationCondition()
+        public object GetMinimum()
         {
+            return OnGetMinimum();
+        }
+
+        public object GetMaximum()
+        {
+            return OnGetMaximum();
+        }
+
+        #endregion
+
+        #region Virtual Members
+
+        protected override Notification OnValidate()
+        {
+            var notification = Notification.CreateEmpty();
             var propertyValue = PropertyValue as DateTime?;
 
             if (propertyValue.IsNotNull())
@@ -23,11 +35,11 @@ namespace Microservice.Framework.Domain.Rules.Common
 
                 if (propertyValue > maximum || propertyValue < minimum)
                 {
-                    return false;
+                    notification.AddMessage(OnCreateMessage());
                 }
             }
 
-            return true;
+            return notification;
         }
 
         protected virtual DateTime OnGetMaximum()
@@ -40,18 +52,9 @@ namespace Microservice.Framework.Domain.Rules.Common
             return DateTime.MinValue;
         }
 
-        #endregion
-
-        #region IRangeRule Members
-
-        public object GetMaximum()
+        protected virtual Message OnCreateMessage()
         {
-            return OnGetMaximum();
-        }
-
-        public object GetMinimum()
-        {
-            return OnGetMaximum();
+            return CreateMessage("{0} does not fall within the range of {1} and {2}", DisplayName, OnGetMinimum().ToLongDateString(), OnGetMaximum().ToLongDateString());
         }
 
         #endregion

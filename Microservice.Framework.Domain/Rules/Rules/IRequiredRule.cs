@@ -1,6 +1,6 @@
 ﻿namespace Microservice.Framework.Domain.Rules
 {
-    public interface IRequiredRule<T> : IRule<T>
+    public interface IRequiredRule : IRule
     {
         bool IsRequired();
     }

@@ -1,10 +1,13 @@
 ﻿using Microservice.Framework.Common;
+using Microservice.Framework.Domain.Rules.Notifications;
+using System;
+using System.Collections.Generic;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
-    public abstract class RequiredRule<T> : Rule<T>, IRequiredRule<T> where T : class
+    public abstract class RequiredRule<T> : Rule<T>, IRequiredRule where T : class
     {
-        #region IRequiredRule
+        #region IRequiredRule Members
 
         public bool IsRequired()
         {
@@ -13,37 +16,55 @@ namespace Microservice.Framework.Domain.Rules.Common
 
         #endregion
 
-        #region Virtual Methods
+        #region Virtual Members
 
-        protected override string ValidationMessage => "'{0}' is a required property";
+        protected override Notification OnValidate()
+        {
+            var notification = Notification.CreateEmpty();
+            
+            if (IsRequired())
+            {
+                if (PropertyValue.IsNull())
+                {
+                    notification.AddMessage(OnCreateMessage());
+                }
+                else
+                {
+                    if (!RequiredPropertyHasValue())
+                    {
+                        notification.AddMessage(OnCreateMessage());
+                    }
+                }
+            }
+
+            return notification;
+        }
 
         protected virtual bool OnIsRequired()
         {
             return true;
         }
 
-        protected override bool ValidationCondition()
+        protected virtual Message OnCreateMessage()
         {
-            if(IsRequired())
-            {
-                var value = Property.GetValue(Owner);
+            return CreateMessage("{0} is required", DisplayName);
+        }
 
-                if (value.IsNull())
-                {
-                    return false;
-                }
+        protected override Message CreateMessage(string message, params object[] values)
+        {
+            var result = base.CreateMessage(message, values);
 
-                return RequiredPropertyHasValue();
-            }
+            result.MessageType = MessageType.Required;
 
-            return true;
+            return result;
         }
 
         protected virtual bool RequiredPropertyHasValue()
         {
-            if (PropertyValueType.Equals(typeof(string)))
+             if (PropertyValueType.Equals(typeof(string)))
             {
-                if (PropertyValue.AsString().IsNullOrEmpty())
+                var stringValue = IsSpaceValidForString ? PropertyValue.AsString() : PropertyValue.AsString().Trim(' ');
+                if (stringValue.IsNullOrEmpty())
                 {
                     return false;
                 }
@@ -58,6 +79,51 @@ namespace Microservice.Framework.Domain.Rules.Common
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Indicates whether only a space is a valid value for string properties
+        /// </summary>
+        public virtual bool IsSpaceValidForString
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        #endregion
+    }
+
+    public abstract class RequiredRule<T, C> : RequiredRule<T> 
+        where T : class
+        where C : class
+    {
+        #region Methods
+
+        public C GetContext()
+        {
+            return (C)base.Context;
+        }
+
+        #endregion 
+    }
+
+    public abstract class RequiredListRule<T, K> : RequiredRule<T>
+        where T : class
+        where K : class
+    {
+        #region Properties
+
+        public abstract IList<K> List { get; }
+
+        protected override bool RequiredPropertyHasValue()
+        {
+            return List.Count > 0;
         }
 
         #endregion

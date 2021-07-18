@@ -1,3 +1,4 @@
+using Microservice.Framework.Common;
 using Microservice.Framework.Domain.Extensions;
 using Microservice.Framework.Domain.Rules.RuleValidator;
 using Microservice.Framework.Domain.Test.Rules;
@@ -30,11 +31,14 @@ namespace Microservice.Framework.Domain.Test
                 .GetService<IValidator>();
 
             var validationResult = await validator
-                .ValidateEntityAsync(
-                new TestObject(), 
+                .Validate(
+                new TestObject(),
+                new TestObjectContext(),
+                SystemCulture.Default(),
+                this.GetType().Assembly,
                 CancellationToken.None);
 
-            Assert.IsTrue(validationResult.HasErrors());
+            Assert.IsTrue(validationResult.HasErrors);
         }
     }
 }
