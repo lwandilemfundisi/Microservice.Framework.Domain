@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
 
 	  <PackageId>Microservice.Framework.Domain</PackageId>
-	  <Version>1.0.3</Version>
+	  <Version>1.0.4</Version>
 	  <Authors>Lwandile Mfundisi</Authors>
 	  <Description>Microservice.Framework.Domain coupled with event driven architecture (to include event sourcing as well)</Description>
 	  <IsPackable>true</IsPackable>
