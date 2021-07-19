@@ -25,11 +25,11 @@ namespace Microservice.Framework.Domain.Extensions
         {
             if (specification == null) throw new ArgumentNullException(nameof(specification));
 
-            var whyIsNotStatisfiedBy = specification.WhyIsNotSatisfiedBy(obj).ToList();
-            if (whyIsNotStatisfiedBy.Any())
+            var whyIsNotStatisfiedBy = specification.WhyIsNotSatisfiedBy(obj);
+            if (whyIsNotStatisfiedBy.HasErrors)
             {
                 throw DomainError.With(
-                    $"'{specification.GetType().PrettyPrint()}' is not satisfied because of {string.Join(" and ", whyIsNotStatisfiedBy)}");
+                    $"'{specification.GetType().PrettyPrint()}' is not satisfied because of {whyIsNotStatisfiedBy}");
             }
         }
 
@@ -38,8 +38,7 @@ namespace Microservice.Framework.Domain.Extensions
             T obj)
         {
             var whyIsNotStatisfiedBy = specification
-                .WhyIsNotSatisfiedBy(obj)
-                .ToList();
+                .WhyIsNotSatisfiedBy(obj);
 
             return whyIsNotStatisfiedBy.Any()
                 ? ExecutionResult.Failed(whyIsNotStatisfiedBy)

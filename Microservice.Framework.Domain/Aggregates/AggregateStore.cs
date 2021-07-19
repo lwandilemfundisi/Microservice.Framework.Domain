@@ -37,7 +37,9 @@ namespace Microservice.Framework.Domain.Aggregates
             _cancellationConfiguration = serviceProvider.GetRequiredService<ICancellationConfiguration>();
         }
 
-        public async Task<TAggregate> LoadAsync<TAggregate, TIdentity>(TIdentity id, CancellationToken cancellationToken)
+        public async Task<TAggregate> LoadAsync<TAggregate, TIdentity>(
+            TIdentity id, 
+            CancellationToken cancellationToken)
             where TAggregate : class, IAggregateRoot<TIdentity>
             where TIdentity : IIdentity
         {
@@ -61,7 +63,10 @@ namespace Microservice.Framework.Domain.Aggregates
             }
         }
 
-        public async Task StoreAsync<TAggregate, TIdentity>(TAggregate aggregate, ISourceId sourceId, CancellationToken cancellationToken)
+        public async Task StoreAsync<TAggregate, TIdentity>(
+            TAggregate aggregate, 
+            ISourceId sourceId, 
+            CancellationToken cancellationToken)
             where TAggregate : class, IAggregateRoot<TIdentity>
             where TIdentity : IIdentity
         {
@@ -72,7 +77,11 @@ namespace Microservice.Framework.Domain.Aggregates
                 .ConfigureAwait(false);
         }
 
-        public async Task UpdateAsync<TAggregate, TIdentity>(TIdentity id, ISourceId sourceId, Func<TAggregate, CancellationToken, Task> updateAggregate, CancellationToken cancellationToken)
+        public async Task UpdateAsync<TAggregate, TIdentity>(
+            TIdentity id, 
+            ISourceId sourceId, 
+            Func<TAggregate, CancellationToken, Task> updateAggregate, 
+            CancellationToken cancellationToken)
             where TAggregate : class, IAggregateRoot<TIdentity>
             where TIdentity : IIdentity
         {
@@ -88,7 +97,11 @@ namespace Microservice.Framework.Domain.Aggregates
                 .ConfigureAwait(false);
         }
 
-        public async Task<IAggregateUpdateResult<TExecutionResult>> UpdateAsync<TAggregate, TIdentity, TExecutionResult>(TIdentity id, ISourceId sourceId, Func<TAggregate, CancellationToken, Task<TExecutionResult>> updateAggregate, CancellationToken cancellationToken)
+        public async Task<IAggregateUpdateResult<TExecutionResult>> UpdateAsync<TAggregate, TIdentity, TExecutionResult>(
+            TIdentity id, 
+            ISourceId sourceId, 
+            Func<TAggregate, CancellationToken, Task<TExecutionResult>> updateAggregate, 
+            CancellationToken cancellationToken)
             where TAggregate : class, IAggregateRoot<TIdentity>
             where TIdentity : IIdentity
             where TExecutionResult : IExecutionResult

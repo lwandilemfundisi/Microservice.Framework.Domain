@@ -17,6 +17,12 @@ namespace Microservice.Framework.Domain.Rules.Notifications
             Text = text;
         }
 
+        public Message(string text, SeverityType severityType)
+            : this(text)
+        {
+            Severity = SeverityType.Critical;
+        }
+
         public Message()
         {
             Severity = SeverityType.Information;

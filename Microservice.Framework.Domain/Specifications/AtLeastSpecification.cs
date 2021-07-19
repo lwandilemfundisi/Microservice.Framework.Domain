@@ -1,4 +1,5 @@
 ﻿using Microservice.Framework.Common;
+using Microservice.Framework.Domain.Rules.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,21 +28,21 @@ namespace Microservice.Framework.Domain
             _specifications = specificationList;
         }
 
-        protected override IEnumerable<string> IsNotSatisfiedBecause(T obj)
+        protected override Notification IsNotSatisfiedBecause(T obj)
         {
             var notStatisfiedReasons = _specifications
                 .Select(s => new
                     {
                         Specification = s,
-                        WhyIsNotStatisfied = s.WhyIsNotSatisfiedBy(obj).ToList()
+                        WhyIsNotStatisfied = s.WhyIsNotSatisfiedBy(obj)
                     })
-                .Where(a => a.WhyIsNotStatisfied.Any())
-                .Select(a => $"{a.Specification.GetType().PrettyPrint()}: {string.Join(", ", a.WhyIsNotStatisfied)}")
-                .ToList();
+                .Where(a => a.WhyIsNotStatisfied.HasErrors)
+                .Select(a => $"{a.Specification.GetType().PrettyPrint()}: {a.WhyIsNotStatisfied}");
 
-            return (_specifications.Count - notStatisfiedReasons.Count) >= _requiredSpecifications
-                ? Enumerable.Empty<string>()
-                : notStatisfiedReasons;
+            return (_specifications.Count - notStatisfiedReasons.Count()) >= _requiredSpecifications
+                ? Notification.CreateEmpty()
+                : Notification
+                    .Create(notStatisfiedReasons.Select(r => new Message(r)).ToList());
         }
     }
 }

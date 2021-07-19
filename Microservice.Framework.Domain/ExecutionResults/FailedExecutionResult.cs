@@ -1,23 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using Microservice.Framework.Domain.Rules.Notifications;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Microservice.Framework.Domain.ExecutionResults
 {
     public class FailedExecutionResult : ExecutionResult
     {
-        public IReadOnlyCollection<string> Errors { get; }
+        public Notification Errors { get; }
 
-        public FailedExecutionResult(IEnumerable<string> errors)
+        public FailedExecutionResult(Notification errors)
         {
-            Errors = (errors ?? Enumerable.Empty<string>()).ToList();
+            Errors = errors;
         }
             
         public override bool IsSuccess { get; } = false;
 
         public override string ToString()
         {
-            return Errors.Any()
-                ? $"Failed execution due to: {string.Join(", ", Errors)}"
+            return Errors.HasErrors
+                ? $"Failed execution due to: {Errors}"
                 : "Failed execution";
         }
     }

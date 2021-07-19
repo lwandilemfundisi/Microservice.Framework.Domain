@@ -1,4 +1,5 @@
 ﻿using Microservice.Framework.Common;
+using Microservice.Framework.Domain.Rules.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -22,12 +23,15 @@ namespace Microservice.Framework.Domain
             return _string.Value;
         }
 
-        protected override IEnumerable<string> IsNotSatisfiedBecause(T obj)
+        protected override Notification IsNotSatisfiedBecause(T obj)
         {
             if (!_predicate(obj))
             {
-                yield return $"'{_string.Value}' is not satisfied";
+                return Notification
+                    .Create(new Message($"'{_string.Value}' is not satisfied", SeverityType.Critical));
             }
+
+            return Notification.CreateEmpty();
         }
 
         private static string MakeString(Expression<Func<T, bool>> expression)

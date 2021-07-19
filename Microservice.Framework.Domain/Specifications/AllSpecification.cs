@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microservice.Framework.Domain.Rules.Notifications;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,9 +19,11 @@ namespace Microservice.Framework.Domain
             _specifications = specificationList;
         }
 
-        protected override IEnumerable<string> IsNotSatisfiedBecause(T obj)
+        protected override Notification IsNotSatisfiedBecause(T obj)
         {
-            return _specifications.SelectMany(s => s.WhyIsNotSatisfiedBy(obj));
+            return Notification
+                .Create(
+                _specifications.SelectMany(s => s.WhyIsNotSatisfiedBy(obj)).ToList());
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microservice.Framework.Domain.Rules.Notifications;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,6 +9,6 @@ namespace Microservice.Framework.Domain
     {
         bool IsSatisfiedBy(T obj);
 
-        IEnumerable<string> WhyIsNotSatisfiedBy(T obj);
+        Notification WhyIsNotSatisfiedBy(T obj);
     }
 }

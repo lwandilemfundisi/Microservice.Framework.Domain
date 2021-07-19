@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microservice.Framework.Domain.Rules.Notifications;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Microservice.Framework.Domain.ExecutionResults
@@ -6,7 +7,7 @@ namespace Microservice.Framework.Domain.ExecutionResults
     public abstract class ExecutionResult : IExecutionResult
     {
         private static readonly IExecutionResult SuccessResult = new SuccessExecutionResult();
-        private static readonly IExecutionResult FailedResult = new FailedExecutionResult(Enumerable.Empty<string>());
+        private static readonly IExecutionResult FailedResult = new FailedExecutionResult(Notification.CreateEmpty());
 
         public static IExecutionResult Success() => SuccessResult;
 
@@ -14,9 +15,7 @@ namespace Microservice.Framework.Domain.ExecutionResults
 
         public static IExecutionResult Failed() => FailedResult;
 
-        public static IExecutionResult Failed(IEnumerable<string> errors) => new FailedExecutionResult(errors);
-
-        public static IExecutionResult Failed(params string[] errors) => new FailedExecutionResult(errors);
+        public static IExecutionResult Failed(Notification notification) => new FailedExecutionResult(notification);
 
         public abstract bool IsSuccess { get; }
 

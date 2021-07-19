@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microservice.Framework.Domain.Rules.Notifications;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,11 +13,11 @@ namespace Microservice.Framework.Domain
             return !IsNotSatisfiedBecause(obj).Any();
         }
 
-        public IEnumerable<string> WhyIsNotSatisfiedBy(T obj)
+        public Notification WhyIsNotSatisfiedBy(T obj)
         {
             return IsNotSatisfiedBecause(obj);
         }
 
-        protected abstract IEnumerable<string> IsNotSatisfiedBecause(T obj);
+        protected abstract Notification IsNotSatisfiedBecause(T obj);
     }
 }

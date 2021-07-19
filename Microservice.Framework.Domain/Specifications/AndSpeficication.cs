@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microservice.Framework.Domain.Rules.Notifications;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,9 +18,11 @@ namespace Microservice.Framework.Domain
             _specification2 = specification2 ?? throw new ArgumentNullException(nameof(specification2));
         }
 
-        protected override IEnumerable<string> IsNotSatisfiedBecause(T obj)
+        protected override Notification IsNotSatisfiedBecause(T obj)
         {
-            return _specification1.WhyIsNotSatisfiedBy(obj).Concat(_specification2.WhyIsNotSatisfiedBy(obj));
+            return Notification.Add(
+                _specification1.WhyIsNotSatisfiedBy(obj), 
+                _specification2.WhyIsNotSatisfiedBy(obj));
         }
     }
 }

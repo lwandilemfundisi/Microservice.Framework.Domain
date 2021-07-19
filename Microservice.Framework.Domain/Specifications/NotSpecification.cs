@@ -1,4 +1,5 @@
 ﻿using Microservice.Framework.Common;
+using Microservice.Framework.Domain.Rules.Notifications;
 using System;
 using System.Collections.Generic;
 
@@ -14,12 +15,18 @@ namespace Microservice.Framework.Domain
             _specification = specification ?? throw new ArgumentNullException(nameof(specification));
         }
 
-        protected override IEnumerable<string> IsNotSatisfiedBecause(T obj)
+        protected override Notification IsNotSatisfiedBecause(T obj)
         {
             if (_specification.IsSatisfiedBy(obj))
             {
-                yield return $"Specification '{_specification.GetType().PrettyPrint()}' should not be satisfied";
+                return Notification
+                    .Create(
+                    new Message(
+                        $"Specification '{_specification.GetType().PrettyPrint()}' should not be satisfied", 
+                        SeverityType.Critical));
             }
+
+            return Notification.CreateEmpty();
         }
     }
 }
