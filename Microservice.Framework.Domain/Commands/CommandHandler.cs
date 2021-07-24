@@ -33,11 +33,10 @@ namespace Microservice.Framework.Domain.Commands
             TCommand command,
             CancellationToken cancellationToken)
         {
-            await ExecuteAsync(aggregate, command, cancellationToken).ConfigureAwait(false);
-            return ExecutionResult.Success();
+            return await ExecuteAsync(aggregate, command, cancellationToken).ConfigureAwait(false);
         }
 
-        public abstract Task ExecuteAsync(
+        public abstract Task<IExecutionResult> ExecuteAsync(
             TAggregate aggregate,
             TCommand command,
             CancellationToken cancellationToken);
