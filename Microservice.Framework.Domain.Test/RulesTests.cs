@@ -33,7 +33,7 @@ namespace Microservice.Framework.Domain.Test
             var validationResult = await validator
                 .Validate(
                 new TestObject() { Name = "Lwandile"},
-                new TestObjectContext(),
+                null,
                 SystemCulture.Default(),
                 this.GetType().Assembly,
                 CancellationToken.None);
