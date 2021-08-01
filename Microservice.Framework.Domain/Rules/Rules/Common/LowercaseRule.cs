@@ -1,6 +1,8 @@
 ﻿using Microservice.Framework.Common;
 using Microservice.Framework.Domain.Rules.Notifications;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
@@ -8,7 +10,7 @@ namespace Microservice.Framework.Domain.Rules.Common
     {
         #region Virtual Methods
 
-        protected override Notification OnValidate()
+        protected override Task<Notification> OnValidate(CancellationToken cancellationToken)
         {
             return ValidatePropertyValue(PropertyValue.AsString());
         }
@@ -22,7 +24,7 @@ namespace Microservice.Framework.Domain.Rules.Common
 
         #region Methods
 
-        protected Notification ValidatePropertyValue(string propertyValue)
+        protected Task<Notification> ValidatePropertyValue(string propertyValue)
         {
             var notification = Notification.CreateEmpty();
 
@@ -34,7 +36,7 @@ namespace Microservice.Framework.Domain.Rules.Common
                 }
             }
 
-            return notification;
+            return Task.FromResult(notification);
         }
 
         #endregion

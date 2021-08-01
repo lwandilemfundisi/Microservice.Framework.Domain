@@ -2,6 +2,8 @@
 using Microservice.Framework.Domain.Extensions;
 using Microservice.Framework.Domain.Rules.Notifications;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
@@ -9,7 +11,7 @@ namespace Microservice.Framework.Domain.Rules.Common
     {
         #region Virtual Methods
 
-        protected override Notification OnValidate()
+        protected override Task<Notification> OnValidate(CancellationToken cancellationToken)
         {
             var notification = Notification.CreateEmpty();
 
@@ -20,13 +22,13 @@ namespace Microservice.Framework.Domain.Rules.Common
                 if (!StringValidationHelper.ValidateString(propertyValue, AllowedCharacter.Alpha, AllowedCharacter.Space, AllowedCharacter.Apostrophe, AllowedCharacter.Dash, AllowedCharacter.ForwardSlash, AllowedCharacter.Exclamation, AllowedCharacter.Ampersand, AllowedCharacter.RoundBrackets, AllowedCharacter.AccentedVowelsLower))
                 {
                     notification.AddMessage(CreateMessage("{0} is not valid", DisplayName));
-                    return notification;
+                    return Task.FromResult(notification);
                 }
 
                 if (StringValidationHelper.ValidateString(propertyValue,  AllowedCharacter.Apostrophe, AllowedCharacter.Dash, AllowedCharacter.ForwardSlash, AllowedCharacter.Exclamation))
                 {
                     notification.AddMessage(CreateMessage("{0} must contain at least one letter of the alphabet", DisplayName));
-                    return notification;
+                    return Task.FromResult(notification);
                 }
 
                 var terminationCharacter = PropertyValue.AsString().Last().ToString();
@@ -34,12 +36,12 @@ namespace Microservice.Framework.Domain.Rules.Common
                 if (!StringValidationHelper.ValidateString(terminationCharacter, AllowedCharacter.Alpha, AllowedCharacter.Space, AllowedCharacter.RoundBrackets, AllowedCharacter.AccentedVowelsLower))
                 {
                     notification.AddMessage(CreateMessage("{0} may not terminate in a {1}", DisplayName, terminationCharacter));
-                    return notification;
+                    return Task.FromResult(notification);
                 }
 
             }
 
-            return notification;
+            return Task.FromResult(notification);
         }
 
         #endregion

@@ -2,6 +2,8 @@
 using Microservice.Framework.Domain.Extensions;
 using Microservice.Framework.Domain.Rules.Notifications;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
@@ -9,7 +11,7 @@ namespace Microservice.Framework.Domain.Rules.Common
     {
         #region Virtual Methods
 
-        protected override Notification OnValidate()
+        protected override Task<Notification> OnValidate(CancellationToken cancellationToken)
         {
             var notification = Notification.CreateEmpty();
 
@@ -27,12 +29,10 @@ namespace Microservice.Framework.Domain.Rules.Common
                 if (!StringValidationHelper.ValidateString(terminationCharacter, AllowedCharacter.Alpha, AllowedCharacter.Space, AllowedCharacter.ForwardSlash, AllowedCharacter.Exclamation))
                 {
                     notification.AddMessage(CreateMessage("{0} may not terminate in a {1}", DisplayName, terminationCharacter));
-                    return notification;
                 }
-
             }
 
-            return notification;
+            return Task.FromResult(notification);
         }
 
         #endregion

@@ -3,6 +3,8 @@ using Microservice.Framework.Domain.Extensions;
 using Microservice.Framework.Domain.Rules.Notifications;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
@@ -10,7 +12,7 @@ namespace Microservice.Framework.Domain.Rules.Common
     {
         #region Virtual Methods
 
-        protected override Notification OnValidate()
+        protected override Task<Notification> OnValidate(CancellationToken cancellationToken)
         {
             var notification = Notification.CreateEmpty();
 
@@ -24,7 +26,7 @@ namespace Microservice.Framework.Domain.Rules.Common
                 }
             }
 
-            return notification;
+            return Task.FromResult(notification);
         }
 
         protected virtual Message OnCreateMessage()

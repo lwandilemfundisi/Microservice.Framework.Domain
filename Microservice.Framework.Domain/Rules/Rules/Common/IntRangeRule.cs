@@ -1,5 +1,7 @@
 ﻿using Microservice.Framework.Common;
 using Microservice.Framework.Domain.Rules.Notifications;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
@@ -21,7 +23,7 @@ namespace Microservice.Framework.Domain.Rules.Common
 
         #region Virtual Members
 
-        protected override Notification OnValidate()
+        protected override Task<Notification> OnValidate(CancellationToken cancellationToken)
         {
             var notification = Notification.CreateEmpty();
 
@@ -38,7 +40,7 @@ namespace Microservice.Framework.Domain.Rules.Common
                 }
             }
 
-            return notification;
+            return Task.FromResult(notification);
         }
 
         protected virtual int OnGetMinimum()

@@ -3,6 +3,8 @@ using Microservice.Framework.Domain.Rules;
 using Microservice.Framework.Domain.Rules.Common;
 using Microservice.Framework.Domain.Rules.Notifications;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Test.Rules
 {
@@ -41,6 +43,7 @@ namespace Microservice.Framework.Domain.Test.Rules
     }
 
     [Rule(typeof(TestObject))]
+    [RuleContext(typeof(TestObjectContext))]
     public class PersonRule : Rule<TestObject>
     {
         ILogger<PersonRule> _logger;
@@ -50,9 +53,9 @@ namespace Microservice.Framework.Domain.Test.Rules
             _logger = logger;
         }
 
-        protected override Notification OnValidate()
+        protected override Task<Notification> OnValidate(CancellationToken cancellationToken)
         {
-            return Instance.GetSpecification().WhyIsNotSatisfiedBy(Instance);
+            return Task.FromResult(Instance.GetSpecification().WhyIsNotSatisfiedBy(Instance));
         }
 
         protected override bool OnMustValidate()

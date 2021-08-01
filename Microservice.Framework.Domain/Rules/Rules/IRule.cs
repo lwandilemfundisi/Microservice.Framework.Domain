@@ -1,5 +1,7 @@
 using Microservice.Framework.Common;
 using Microservice.Framework.Domain.Rules.Notifications;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules
 {
@@ -15,7 +17,7 @@ namespace Microservice.Framework.Domain.Rules
 
         string Name { get; set; }
 
-        Notification Validate();
+        Task<Notification> Validate(CancellationToken cancellationToken);
 
         bool IsPropertyRule { get; set; }
 

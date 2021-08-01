@@ -3,6 +3,8 @@ using Microservice.Framework.Domain.Rules.Notifications;
 using System;
 using System.Collections;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
@@ -32,9 +34,9 @@ namespace Microservice.Framework.Domain.Rules.Common
 
         public string ReadOnlyMessage { get; set; }
 
-        public Notification Validate()
+        public Task<Notification> Validate(CancellationToken cancellationToken)
         {
-            return OnValidate();
+            return OnValidate(cancellationToken);
         }
 
         public bool IsApplicabilityRule { get; set; }
@@ -160,9 +162,9 @@ namespace Microservice.Framework.Domain.Rules.Common
             return true;
         }
 
-        protected virtual Notification OnValidate()
+        protected virtual Task<Notification> OnValidate(CancellationToken cancellationToken)
         {
-            return Notification.CreateEmpty();
+            return Task.FromResult(Notification.CreateEmpty());
         }
 
         protected virtual string GenerateMessagePropertyName()

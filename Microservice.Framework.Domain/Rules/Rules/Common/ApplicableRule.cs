@@ -1,5 +1,7 @@
 ﻿using Microservice.Framework.Common;
 using Microservice.Framework.Domain.Rules.Notifications;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 { 
@@ -23,7 +25,7 @@ namespace Microservice.Framework.Domain.Rules.Common
 
         #region Virtual Methods
 
-        protected override Notification OnValidate()
+        protected override async Task<Notification> OnValidate(CancellationToken cancellationToken)
         {
             var notification = Notification.CreateEmpty();
 
@@ -33,12 +35,12 @@ namespace Microservice.Framework.Domain.Rules.Common
                 {
                     if (PropertyHasValue())
                     {
-                        notification += OnCreateApplicableMessage();
+                        notification += await OnCreateApplicableMessage();
                     }
                 }
                 else
                 {
-                    notification += OnCreateApplicableMessage();
+                    notification += await OnCreateApplicableMessage();
                 }
             }
 
@@ -47,9 +49,9 @@ namespace Microservice.Framework.Domain.Rules.Common
 
         protected abstract bool OnIsApplicable();
 
-        protected virtual Message OnCreateApplicableMessage()
+        protected virtual Task<Message> OnCreateApplicableMessage()
         {
-            return CreateMessage("{0} is not applicable".FormatInvariantCulture(DisplayName));
+            return Task.FromResult(CreateMessage("{0} is not applicable".FormatInvariantCulture(DisplayName)));
         }
 
         protected override Message CreateMessage(string message, params object[] values)

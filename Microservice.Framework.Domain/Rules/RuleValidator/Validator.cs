@@ -30,7 +30,7 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
 
         #region Methods
 
-        public Task<Notification> Validate(
+        public async Task<Notification> Validate(
             IEnumerable<IRule> rules, 
             CancellationToken cancellationToken)
         {
@@ -46,7 +46,7 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
             //applicability rules
             foreach (var applicableRule in applicableRules.Where(r => r.MustValidate()))
             {
-                var ruleNotification = applicableRule.Validate();
+                var ruleNotification = await applicableRule.Validate(cancellationToken);
 
                 if (ruleNotification.HasErrors)
                 {
@@ -66,7 +66,7 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
                 {
                     if (requiredRule.MustValidate())
                     {
-                        var ruleNotification = requiredRule.Validate();
+                        var ruleNotification = await requiredRule.Validate(cancellationToken);
 
                         notification += ruleNotification;
 
@@ -82,16 +82,16 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
             var nonParallelRules = validationRules.Where(c => !c.CanExecuteParallel()).ToList();
 
             //business and validation rules
-            Parallel.ForEach(parallelRules, new ParallelOptions { MaxDegreeOfParallelism = 5 }, rule =>
+            Parallel.ForEach(parallelRules, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async rule =>
             {
-                notification += ValidateRule(rule, failedApplicableRules, failedRequiredRules);
+                notification += await ValidateRule(rule, failedApplicableRules, failedRequiredRules, cancellationToken);
             });
 
             foreach (var rule in nonParallelRules)
             {
-                notification += ValidateRule(rule, failedApplicableRules, failedRequiredRules);
+                notification += await ValidateRule(rule, failedApplicableRules, failedRequiredRules, cancellationToken);
             }
-            return Task.FromResult(notification);
+            return notification;
         }
 
         public async Task<Notification> Validate(
@@ -328,10 +328,11 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
             return rule;
         }
 
-        private static Notification ValidateRule(
+        private static async Task<Notification> ValidateRule(
             IRule rule, 
             IEnumerable<IApplicableRule> applicableRules, 
-            IEnumerable<IRequiredRule> requiredRules)
+            IEnumerable<IRequiredRule> requiredRules,
+            CancellationToken cancellationToken)
         {
             var notification = Notification.CreateEmpty();
 
@@ -340,7 +341,7 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
             {
                 if (rule.MustValidate())
                 {
-                    notification += rule.Validate();
+                    notification += await rule.Validate(cancellationToken);
                 }
             }
 

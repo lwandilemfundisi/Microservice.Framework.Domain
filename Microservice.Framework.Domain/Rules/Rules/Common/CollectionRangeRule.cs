@@ -1,5 +1,7 @@
 ﻿using Microservice.Framework.Common;
 using Microservice.Framework.Domain.Rules.Notifications;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
@@ -27,9 +29,9 @@ namespace Microservice.Framework.Domain.Rules.Common
 
         #region Virtual Methods
 
-        protected override Notification OnValidate()
+        protected override Task<Notification> OnValidate(CancellationToken cancellationToken)
         {
-            var notification = base.OnValidate();
+            var notification = Notification.CreateEmpty();
             var minimum = GetMinimum() as int?;
             var maximum = GetMaximum() as int?;
             var collectionLength = CollectionLength;
@@ -51,7 +53,7 @@ namespace Microservice.Framework.Domain.Rules.Common
                 notification += OnCreateMessage(minimum, maximum);
             }
 
-            return notification;
+            return Task.FromResult(notification);
         }
 
         protected virtual int? OnGetMinimum()
