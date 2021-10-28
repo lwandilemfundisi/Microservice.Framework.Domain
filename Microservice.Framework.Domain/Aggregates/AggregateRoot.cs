@@ -60,7 +60,7 @@ namespace Microservice.Framework.Domain.Aggregates
             else
                 await Persistence.Update(this, CancellationToken.None);
 
-            await Persistence.Dispose(cancellationToken);
+            //await Persistence.Dispose(cancellationToken);
 
             if (_occuredEvents.HasItems())
             {
