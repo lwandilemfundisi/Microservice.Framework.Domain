@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
 
 	  <PackageId>Microservice.Framework.Domain</PackageId>
-	  <Version>1.0.9</Version>
+	  <Version>7.0.0</Version>
 	  <Authors>Lwandile Mfundisi</Authors>
 	  <Description>Microservice.Framework.Domain coupled with event driven architecture (to include event sourcing as well)</Description>
 	  <IsPackable>true</IsPackable>
@@ -15,13 +15,13 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
-		<PackageReference Include="Microservice.Framework.Ioc" Version="1.0.0" />
-		<PackageReference Include="Microservice.Framework.Common" Version="1.0.2" />
-		<PackageReference Include="Microservice.Framework.Persistence" Version="1.0.2" />
-		<PackageReference Include="Microservice.Framework.VersionTypes" Version="1.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+		<PackageReference Include="Microservice.Framework.Ioc" Version="7.0.0" />
+		<PackageReference Include="Microservice.Framework.Common" Version="7.0.0" />
+		<PackageReference Include="Microservice.Framework.Persistence" Version="7.0.0" />
+		<PackageReference Include="Microservice.Framework.VersionTypes" Version="7.0.0" />
 	</ItemGroup>
 
 	<Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
