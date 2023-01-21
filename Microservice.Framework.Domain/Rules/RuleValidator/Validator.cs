@@ -30,7 +30,7 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
 
         #region Methods
 
-        public async Task<Notification> Validate(
+        public Task<Notification> Validate(
             IEnumerable<IRule> rules, 
             CancellationToken cancellationToken)
         {
@@ -42,21 +42,22 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
             var failedApplicableRules = new List<IApplicableRule>();
 
             var notification = Notification.CreateEmpty();
+            ConcurrentDictionary<string, Task> executingTasks = new();
 
             //applicability rules
             foreach (var applicableRule in applicableRules.Where(r => r.MustValidate()))
             {
-                var ruleNotification = await applicableRule.Validate(cancellationToken);
-
-                if (ruleNotification.HasErrors)
-                {
-                    notification += ruleNotification;
-                }
-
-                if (!applicableRule.IsApplicable())
-                {
-                    failedApplicableRules.Add(applicableRule);
-                }
+                executingTasks.TryAdd(
+                    Guid.NewGuid().ToString(),
+                    applicableRule
+                    .Validate(cancellationToken)
+                    .ContinueWith(r =>
+                    {
+                        if (r.Result.HasErrors)
+                            notification += r.Result;
+                        if (!applicableRule.IsApplicable())
+                            failedApplicableRules.Add(applicableRule);
+                    }));
             }
 
             //required rules
@@ -66,14 +67,16 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
                 {
                     if (requiredRule.MustValidate())
                     {
-                        var ruleNotification = await requiredRule.Validate(cancellationToken);
-
-                        notification += ruleNotification;
-
-                        if (ruleNotification.HasErrors)
-                        {
-                            failedRequiredRules.Add(requiredRule);
-                        }
+                        executingTasks.TryAdd(
+                            Guid.NewGuid().ToString(),
+                            requiredRule
+                            .Validate(cancellationToken)
+                            .ContinueWith(r =>
+                            {
+                                notification += r.Result;
+                                if (r.Result.HasErrors)
+                                    failedRequiredRules.Add(requiredRule);
+                            }));
                     }
                 }
             }
@@ -84,14 +87,28 @@ namespace Microservice.Framework.Domain.Rules.RuleValidator
             //business and validation rules
             Parallel.ForEach(parallelRules, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async rule =>
             {
-                notification += await ValidateRule(rule, failedApplicableRules, failedRequiredRules, cancellationToken);
+                executingTasks.TryAdd(
+                    Guid.NewGuid().ToString(),
+                    ValidateRule(rule, failedApplicableRules, failedRequiredRules, cancellationToken)
+                    .ContinueWith(r =>
+                    {
+                        notification += r.Result;
+                    }));
             });
 
             foreach (var rule in nonParallelRules)
             {
-                notification += await ValidateRule(rule, failedApplicableRules, failedRequiredRules, cancellationToken);
+                executingTasks.TryAdd(
+                    Guid.NewGuid().ToString(),
+                    ValidateRule(rule, failedApplicableRules, failedRequiredRules, cancellationToken)
+                    .ContinueWith(r => 
+                    {
+                        notification += r.Result;
+                    }));
             }
-            return notification;
+
+            Task.WaitAll(executingTasks.Values.ToArray());
+            return Task.FromResult(notification);
         }
 
         public async Task<Notification> Validate(
