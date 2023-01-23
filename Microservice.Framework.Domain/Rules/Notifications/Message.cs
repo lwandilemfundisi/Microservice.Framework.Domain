@@ -45,7 +45,8 @@ namespace Microservice.Framework.Domain.Rules.Notifications
         {
             if (detailed)
             {
-                return "Error:{0}, Severity:{1}, RuleInfo: {2}".FormatInvariantCulture(Text, Severity, RuleInfo);
+                return "Error:{0}, Severity:{1}, RuleInfo: {2}"
+                    .FormatInvariantCulture(Text, Severity, RuleInfo);
             }
 
             return Text;

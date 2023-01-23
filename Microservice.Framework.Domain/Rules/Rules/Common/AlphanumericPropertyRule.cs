@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
-    public abstract class AlphanumericPropertyRule<T> : Rule<T> where T : class
+    public abstract class AlphanumericPropertyRule<T> 
+        : Rule<T> where T : class
     {
         #region Virtual Methods
 
@@ -30,7 +31,10 @@ namespace Microservice.Framework.Domain.Rules.Common
 
             if (propertyValue.IsNotNullOrEmpty())
             {
-                if (!StringValidationHelper.ValidateString(propertyValue, AllowedCharacter.Alpha, AllowedCharacter.Numeric))
+                if (!StringValidationHelper.ValidateString(
+                    propertyValue, 
+                    AllowedCharacter.Alpha, 
+                    AllowedCharacter.Numeric))
                 {
                     notification.AddMessage(OnCreateMessage());
                 }

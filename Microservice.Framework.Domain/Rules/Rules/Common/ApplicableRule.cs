@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 { 
-    public abstract class ApplicableRule<T> : Rule<T>, IApplicableRule where T : class
+    public abstract class ApplicableRule<T> 
+        : Rule<T>, IApplicableRule where T : class
     {
         private bool? isApplicable;
 
@@ -66,7 +67,8 @@ namespace Microservice.Framework.Domain.Rules.Common
         #endregion
     }
 
-    public abstract class ApplicableRule<T, C> : ApplicableRule<T>
+    public abstract class ApplicableRule<T, C> 
+        : ApplicableRule<T>
         where T : class
         where C : class
     {

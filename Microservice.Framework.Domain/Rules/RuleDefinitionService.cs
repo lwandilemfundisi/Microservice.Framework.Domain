@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules
 {
-    public class RuleDefinitionService : VersionedTypeDefinitionService<IRule, RuleVersionAttribute, RuleDefinition>, IRuleDefinitionService
+    public class RuleDefinitionService 
+        : VersionedTypeDefinitionService<IRule, RuleVersionAttribute, RuleDefinition>, IRuleDefinitionService
     {
         public RuleDefinitionService(
             ILogger<RuleDefinitionService> logger,

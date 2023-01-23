@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules
 {
-    public interface IRuleDefinitionService : IVersionedTypeDefinitionService<RuleVersionAttribute, RuleDefinition>
+    public interface IRuleDefinitionService 
+        : IVersionedTypeDefinitionService<RuleVersionAttribute, RuleDefinition>
     {
     }
 }

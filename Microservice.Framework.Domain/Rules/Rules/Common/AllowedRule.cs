@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
-    public abstract class AllowedRule<T> : Rule<T>, IAllowedRule where T : class
+    public abstract class AllowedRule<T> 
+        : Rule<T>, IAllowedRule where T : class
     {
         #region IAllowedRule Members
 
@@ -43,15 +44,19 @@ namespace Microservice.Framework.Domain.Rules.Common
 
         protected abstract IEnumerable OnGetAllowedValues();
 
-        protected virtual bool OnContainsPropertyValue(IEnumerable allowedValues, object propertyValue)
+        protected virtual bool OnContainsPropertyValue(
+            IEnumerable allowedValues, 
+            object propertyValue)
         {
-            return allowedValues.OfType<object>().Contains(v => v.Equals(propertyValue));
+            return allowedValues.OfType<object>()
+                .Contains(v => v.Equals(propertyValue));
         }
 
         #endregion
     }
 
-    public abstract class AllowedRule<T, C> : AllowedRule<T> 
+    public abstract class AllowedRule<T, C> 
+        : AllowedRule<T> 
         where T : class
         where C : class
     {

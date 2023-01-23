@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules.Common
 {
-    public abstract class AlphaPropertyRule<T> : Rule<T> where T : class
+    public abstract class AlphaPropertyRule<T> 
+        : Rule<T> where T : class
     {
         #region Virtual Methods
 

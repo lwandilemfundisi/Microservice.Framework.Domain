@@ -1,6 +1,7 @@
 ﻿namespace Microservice.Framework.Domain.Rules
 {
-    public interface IRangeRule : IRule
+    public interface IRangeRule 
+        : IRule
     {
         object GetMinimum();
 

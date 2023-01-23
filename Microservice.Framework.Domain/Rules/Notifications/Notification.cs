@@ -8,7 +8,8 @@ using Microservice.Framework.Common;
 
 namespace Microservice.Framework.Domain.Rules.Notifications
 {
-    public sealed class Notification : IFormattable, IEnumerable<Message>
+    public sealed class Notification 
+        : IFormattable, IEnumerable<Message>
     {
         #region Constructors
 
@@ -23,37 +24,13 @@ namespace Microservice.Framework.Domain.Rules.Notifications
 
         public IList<Message> Messages { get; set; }
 
-        public bool HasMessages
-        {
-            get
-            {
-                return Messages.Count > 0;
-            }
-        }
+        public bool HasMessages => Messages.Count > 0;
 
-        public bool HasErrors
-        {
-            get
-            {
-                return Messages.Contains(m => m.Severity == SeverityType.Critical);
-            }
-        }
+        public bool HasErrors => Messages.Contains(m => m.Severity == SeverityType.Critical);
 
-        public bool HasWarnings
-        {
-            get
-            {
-                return Messages.Contains(m => m.Severity == SeverityType.Warning);
-            }
-        }
+        public bool HasWarnings => Messages.Contains(m => m.Severity == SeverityType.Warning);
 
-        public bool HasInformation
-        {
-            get
-            {
-                return Messages.Contains(m => m.Severity == SeverityType.Information);
-            }
-        }
+        public bool HasInformation => Messages.Contains(m => m.Severity == SeverityType.Information);
 
         #endregion
 
@@ -156,7 +133,11 @@ namespace Microservice.Framework.Domain.Rules.Notifications
             var builder = new StringBuilder();
             foreach (Message message in Messages)
             {
-                builder.Append(string.Format(CultureInfo.InvariantCulture, "{0}{1}", builder.Length > 0 ? separator : null, message.ToString(detailed)));
+                builder.Append(string.Format(
+                    CultureInfo.InvariantCulture, 
+                    "{0}{1}", 
+                    builder.Length > 0 ? separator : null, 
+                    message.ToString(detailed)));
             }
             return builder.ToString();
         }
@@ -168,7 +149,10 @@ namespace Microservice.Framework.Domain.Rules.Notifications
 
         public void Verify(Func<string> description)
         {
-            Invariant.IsFalse(HasErrors, () => "{0}: {1}".FormatInvariantCulture(description(), ToString()));
+            Invariant.IsFalse(
+                HasErrors, 
+                () => "{0}: {1}".FormatInvariantCulture(description(), 
+                ToString()));
         }
 
         public string ToString(string separator)

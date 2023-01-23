@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Microservice.Framework.Domain.Rules
 {
-    public class RuleDefinition : VersionedTypeDefinition
+    public class RuleDefinition 
+        : VersionedTypeDefinition
     {
         public RuleDefinition(
             int version,

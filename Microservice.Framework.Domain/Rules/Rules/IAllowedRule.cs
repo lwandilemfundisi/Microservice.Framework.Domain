@@ -2,7 +2,8 @@
 
 namespace Microservice.Framework.Domain.Rules
 {
-    public interface IAllowedRule : IRule
+    public interface IAllowedRule 
+        : IRule
     {
         IEnumerable GetAllowedValues();
     }
